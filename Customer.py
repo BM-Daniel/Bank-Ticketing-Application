@@ -2,6 +2,7 @@
 
 class Customer:
     """A class for customers"""
+    priority_level = False
 
     def __init__(self, name, service_request, ticket_ID, priority_level=False):
         self.name = name
