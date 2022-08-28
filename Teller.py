@@ -30,6 +30,7 @@ class TellerQueue:
             self.queue.append(customer)
             self.queue_size += 1  # Increments the current queue size
 
+
     def dequeue(self):
         """Removes customer from the queue"""
 

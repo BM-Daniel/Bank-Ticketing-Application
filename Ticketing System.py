@@ -1,11 +1,6 @@
 from Customer import Customer
 from Teller import TellerQueue
 
-print("*" * 6, "Welcome to DIGESJC Bank", "*" * 6, end="\n")  # Welcomes user
-
-ticket_id = 0
-teller_id = 0
-
 
 def get_user():
     """
@@ -64,11 +59,11 @@ def get_task():
     # Validates admin input
     while True:
         try:
-            print("Welcome Admin!")
+            print("\nWelcome Admin!")
             print("Tasks: ")
             print("\t1. Create a teller queue")
             print("\t2. Reassign active teller")
-            task = int(input("What task will you like to accomplish?"))
+            task = int(input("Enter task: "))
 
             if task < 1 or task > 2:
                 print("\nEnter a correct task!\n")
@@ -78,7 +73,7 @@ def get_task():
             print("\nEnter a correct task!")
 
 
-def admin(teller_id, teller_list):
+def admin(teller_id_no, teller_list):
     """
     Allows admin to create teller queues and re-assign an active teller
     :param teller_id:
@@ -89,10 +84,11 @@ def admin(teller_id, teller_list):
 
     # Creates a new teller queue
     if task == 1:
-        print("Please input teller details:")
-        teller_name = input("Name: ")
+        print("\nPlease input teller details:")
+        teller_name = input("Name: ").title()
         teller_service = get_service()
-        teller_id += 1  # Generates a new teller id
+
+        teller_id = teller_name[0 : 2].lower() + str(teller_id_no)  # Generates a new teller id
 
         if teller_service == "Deposit":
             deposit = TellerQueue(teller_id, teller_name, teller_service)
@@ -104,17 +100,39 @@ def admin(teller_id, teller_list):
             transfer = TellerQueue(teller_id, teller_name, teller_service)
             teller_list.append(transfer)  # Adds transfer queue to the teller list
 
-        return f"{teller_service} queue has been created"
+        print(f"\n{teller_service} queue has been created\n")
+        return
+
+    else:
+        print("\nPlease enter the service queue you want to edit")
+        service = get_service()
+
+        if len(teller_list) == 0:
+            print("\nNo teller queues have been created\n")
+            return
+
+        for i in range(len(teller_list)):
+            if teller_list[i].service == service:
+                new_teller_name = input("Enter the new teller's name: ")
+                teller_list[i].teller_name = new_teller_name.title()
+                return f"{new_teller_name} has been reassigned to {service} queue"
+            else:
+                print("\nThe service queue does not exist!\n")
 
 
-def customer(ticket_id, teller_queue):
+
+def customer(ticket_id, teller_list):
     """
     Adds a new customer to a particular teller queue
     :param ticket_id:
     :param teller_queue:
     :return: success message
     """
-    print("Please enter the following details: ")
+    if len(teller_list) == 0:
+        print("\nNo service queue available. Contact the admin\n")
+        return
+
+    print("\nPlease enter the following details: ")
     customer_name = input("Name: ")
     service_request = get_service()
     amount = 0
@@ -130,7 +148,83 @@ def customer(ticket_id, teller_queue):
     ticket_id += 1  # Generates a new ticket id
 
     new_customer = Customer(customer_name.title(), service_request, ticket_id, priority_level)
-    teller_queue.enqueue(new_customer)  # Adds a customer to a particular teller queue
 
-    return f"Welcome {customer_name}. You have a place in the {service_request} queue." \
-           f"\nYour ticket number is #{ticket_id}"
+    service_present = False
+
+    for i in range(len(teller_list)):
+        if service_request == teller_list[i].service:
+            service_present = True
+
+    if service_present:
+        for i in range(len(teller_list)):
+            teller_list[i].enqueue(new_customer)  # Adds a customer to a particular teller queue
+    else:
+        print(f"\n{service_request} queue is unavailable. Please contact admin\n")
+        return
+
+    print()
+    print("*"*10, "Welcome", "*"*10)
+    print("Ticket Details: ")
+    print(f"\t\tName: {customer_name}")
+    print(f"\t\tTicket Number: #{ticket_id}")
+    print(f"\t\tTransaction: {service_request}")
+    print("*"*29, "\n")
+
+
+
+def validate_teller(teller_list):
+    correct = True
+    while True:
+        print("\nPlease enter the following details: ")
+        teller_id = input("Teller id: ")
+        print("Enter service type: ")
+        service_request = get_service()
+        print()
+
+        for i in range(len(teller_list)):
+            if teller_id == teller_list[i].teller_ID and service_request == teller_list[i].service:
+                return i
+            else:
+                correct = False
+
+        if not correct:
+            print("Incorrect Details!!!")
+
+
+def teller(teller_list):
+    if len(teller_list) == 0:
+        print("No teller queue. Contact the admin")
+        return
+
+    teller_index = validate_teller(teller_list)
+
+    if teller_list[teller_index].is_empty():
+        print("No customer available\n")
+        return
+
+    choice = int(input("Enter 1 to serve and 0 to exit: "))
+    while choice == 1:
+        print(f"{teller_list[teller_index]}")
+        teller_list[teller_index].dequeue()
+        choice = input("Enter 1 to serve and 0 to exit: ")
+        if choice == 0 or teller_list[teller_index].is_empty():
+            break
+
+def main():
+    teller_list = []
+    ticket_id = 0
+    teller_id = 21
+
+    print("*" * 6, "Welcome to DIGESJC Bank", "*" * 6, end="\n")  # Welcomes user
+
+    while True:
+        user = get_user()
+
+        if user == 1:
+            admin(teller_id, teller_list)
+        elif user == 2:
+            customer(ticket_id, teller_list)
+        else:
+            teller(teller_list)
+
+main()
