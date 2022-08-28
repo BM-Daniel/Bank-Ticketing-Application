@@ -50,7 +50,7 @@ def get_service():
             print("\nEnter a valid option!!!\n")  # Displays error message
 
 
-def get_task():
+def get_admin_task():
     """
     Returns the task of admin
     :return: task
@@ -60,7 +60,8 @@ def get_task():
     while True:
         try:
             print("\nWelcome Admin!")
-            print("Tasks: ")
+            input("Enter password: ")
+            print("\nTasks: ")
             print("\t1. Create a teller queue")
             print("\t2. Reassign active teller")
             task = int(input("Enter task: "))
@@ -80,7 +81,7 @@ def admin(teller_id_no, teller_list):
     :param teller_list:
     :return:
     """
-    task = get_task()
+    task = get_admin_task()
 
     # Creates a new teller queue
     if task == 1:
@@ -133,13 +134,18 @@ def customer(ticket_id, teller_list):
         return
 
     print("\nPlease enter the following details: ")
-    customer_name = input("Name: ")
+    customer_name = input("Name: ").title()
     service_request = get_service()
     amount = 0
-    try:
-        amount = round(float(input("Amount of Transaction: ")), 2)
-    except ValueError:
-        print("Enter a valid amount")
+    while True:
+        try:
+            amount = round(float(input("Amount of Transaction: GH¢")), 2)
+            if amount > 0:
+                break
+            else:
+                print("Enter a valid amount")
+        except ValueError:
+            print("Enter a valid amount")
 
     priority_level = False
     if amount > 10000:
@@ -147,7 +153,7 @@ def customer(ticket_id, teller_list):
 
     ticket_id += 1  # Generates a new ticket id
 
-    new_customer = Customer(customer_name.title(), service_request, ticket_id, priority_level)
+    new_customer = Customer(customer_name, service_request, ticket_id, priority_level)
 
     service_present = False
 
@@ -170,6 +176,17 @@ def customer(ticket_id, teller_list):
     print(f"\t\tTransaction: {service_request}")
     print("*"*29, "\n")
 
+def get_choice():
+    while True:
+        try:
+            choice = int(input("Enter 1 to serve(0 to exit): "))
+            if choice == 1 or choice == 0:
+                return choice
+            else:
+                print("\nEnter a correct choice\n")
+        except ValueError:
+            print("\nEnter a valid number\n")
+
 
 
 def validate_teller(teller_list):
@@ -191,10 +208,16 @@ def validate_teller(teller_list):
             print("Incorrect Details!!!")
 
 
+def get_teller_task():
+    pass
+
+
 def teller(teller_list):
     if len(teller_list) == 0:
-        print("No teller queue. Contact the admin")
+        print("\nNo teller queue. Contact the admin\n")
         return
+
+    teller_task = get_teller_task()
 
     teller_index = validate_teller(teller_list)
 
@@ -202,12 +225,18 @@ def teller(teller_list):
         print("No customer available\n")
         return
 
-    choice = int(input("Enter 1 to serve and 0 to exit: "))
-    while choice == 1:
+    while True:
+        choice = get_choice()
+
+        if choice == 0:
+            print("\n..........\n")
+            break
+
+        print(teller_list[teller_index].dequeue())
         print(f"{teller_list[teller_index]}")
-        teller_list[teller_index].dequeue()
-        choice = input("Enter 1 to serve and 0 to exit: ")
-        if choice == 0 or teller_list[teller_index].is_empty():
+
+        if teller_list[teller_index].is_empty():
+            print("No more customers in this queue.\n")
             break
 
 def main():
@@ -224,6 +253,7 @@ def main():
             admin(teller_id, teller_list)
         elif user == 2:
             customer(ticket_id, teller_list)
+            ticket_id += 1
         else:
             teller(teller_list)
 
