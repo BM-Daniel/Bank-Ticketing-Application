@@ -11,6 +11,7 @@ class TellerQueue:
         self.queue = []  # Set queue to empty
         self.max_capacity = max_capacity
         self.queue_size = 0  # Set current queue size to 0
+        self.priority_count = 0
 
     def is_empty(self):
         """Checks if queue is empty"""
@@ -27,7 +28,10 @@ class TellerQueue:
             raise Exception("Queue is full")
 
         if customer.service_request == self.service: # Matches customer to teller
-            self.queue.append(customer)
+            if customer.priority_level is True:
+                self.push_front(customer)
+            else:
+                self.queue.append(customer)
             self.queue_size += 1  # Increments the current queue size
 
     def dequeue(self):
@@ -37,7 +41,7 @@ class TellerQueue:
             raise Exception("Queue is empty")
 
         self.queue_size -= 1
-        return f"Ticket number {self.queue.pop(self.front).ticket_ID} has been served"
+        return f"Ticket number {self.queue.pop(self.front).ticket_ID} has been served\n"
 
     def current_queue_size(self):
         """Return the current number of customers in the queue"""
@@ -45,7 +49,12 @@ class TellerQueue:
 
     def __repr__(self):
         """Displays the customers in the queue"""
+        print("Name", " " * 15, "Ticket")
         for i in range(self.current_queue_size()):
-            print(f"{str(self.queue[i].name)}: {str(self.queue[i].ticket_ID)}")
-
+            print(f"{str(self.queue[i].name):<20}: #{str(self.queue[i].ticket_ID)}")
+        print(f"\nNumber of Customers: {self.current_queue_size()}")
         return ""
+
+    def push_front(self, customer):
+        self.queue.insert(self.priority_count, customer)
+        self.priority_count += 1
