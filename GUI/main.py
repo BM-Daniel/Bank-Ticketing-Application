@@ -4,7 +4,6 @@ from tkinter import *
 def place_center(WINDOW_WIDTH,width):
     return int((WINDOW_WIDTH-width)/2)
 
-
 root = Tk()
 window_properties = {
     'root':root,
@@ -149,20 +148,4 @@ def customer_page():
     root.mainloop()
 
 
-
-    # --- ROOT  VARIABLES ---
-    # buttons setup
-    # BTN_WIDTH, BTN_HEIGHT = 15, 3
-    # BTNx, BTNy = BTN_WIDTH*8, BTN_HEIGHT*8
-    # Mx, My = place_center(WIN_WIDTH, BTN_WIDTH), place_center(WIN_HEIGHT, BTN_HEIGHT)
-    # no_of_users = len(program_sequence['options'])
-    # GAP = int((WIN_WIDTH-BTNx*no_of_users)/(no_of_users+1))
-
-    # buttons
-    # Button(root, text="Admin", font=f'{DEFAULT_FONT} 10', bd=0, bg=THEME_DARK, fg=THEME_LIGHT, width=BTN_WIDTH, height=BTN_HEIGHT,command=admin_login).place(x=GAP, y=My)
-    # Button(root, text="Teller", font=f'{DEFAULT_FONT} 10', bd=0, bg=THEME_DARK, fg=THEME_LIGHT, width=BTN_WIDTH, height=BTN_HEIGHT,command=teller_login).place(x=GAP*2+BTNx, y=My)
-    # Button(root, text="Customer",font=f'{DEFAULT_FONT} 10', bd=0, bg=THEME_DARK, fg=THEME_LIGHT, width=BTN_WIDTH, height=BTN_HEIGHT,command=customer_page).place(x=GAP*3+BTNx*2, y=My)
-    # for user in range(len(program_sequence['options'])):
-    #     Button(root, text=program_sequence['options'][user], font=f'{DEFAULT_FONT} 10', bd=0, bg=THEME_DARK, fg=THEME_LIGHT, 
-    #             width=BTN_WIDTH, height=BTN_HEIGHT,command=program_sequence['command'][user]).place(x=GAP*(user+1)+BTNx*(user), y=My)
 user_page(window_properties)
