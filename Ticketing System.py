@@ -179,11 +179,15 @@ def customer(ticket_id, teller_list):
 def get_choice():
     while True:
         try:
-            choice = int(input("Enter 1 to serve(0 to exit): "))
-            if choice == 1 or choice == 0:
-                return choice
-            else:
+            print("\t1. Serve Queue")
+            print("\t2. View Queue")
+            print("\t3. Log out")
+            choice = int(input("Enter choice: "))
+
+            if choice < 1 or choice > 3:
                 print("\nEnter a correct choice\n")
+            else:
+                return choice
         except ValueError:
             print("\nEnter a valid number\n")
 
@@ -208,16 +212,10 @@ def validate_teller(teller_list):
             print("Incorrect Details!!!")
 
 
-def get_teller_task():
-    pass
-
-
 def teller(teller_list):
     if len(teller_list) == 0:
         print("\nNo teller queue. Contact the admin\n")
         return
-
-    teller_task = get_teller_task()
 
     teller_index = validate_teller(teller_list)
 
@@ -228,16 +226,20 @@ def teller(teller_list):
     while True:
         choice = get_choice()
 
-        if choice == 0:
+        if choice == 3:
             print("\n..........\n")
             break
+        elif choice == 2:
+            print()
+            print(f"{teller_list[teller_index]}")
+        else:
+            print()
+            print(teller_list[teller_index].dequeue())
+            print(f"{teller_list[teller_index]}")
 
-        print(teller_list[teller_index].dequeue())
-        print(f"{teller_list[teller_index]}")
-
-        if teller_list[teller_index].is_empty():
-            print("No more customers in this queue.\n")
-            break
+            if teller_list[teller_index].is_empty():
+                print("No more customers in this queue.\n")
+                break
 
 def main():
     teller_list = []
