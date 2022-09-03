@@ -1,6 +1,6 @@
 from Customer import Customer
 from Teller import TellerQueue
-
+import operations as op
 
 def get_user():
     """
@@ -117,13 +117,12 @@ def admin(teller_id_no, teller_list):
             if teller_list[i].service == service:
                 new_teller_name = input("Enter the new teller's name: ")
                 teller_list[i].teller_name = new_teller_name.title()
-                return f"{new_teller_name} has been reassigned to {service} queue"
+                print(f"{new_teller_name} has been reassigned to {service} queue\n")
             else:
                 print("\nThe service queue does not exist!\n")
 
 
-
-def customer(ticket_id, teller_list):
+def customer(teller_list):
     """
     Adds a new customer to a particular teller queue
     :param ticket_id:
@@ -152,7 +151,10 @@ def customer(ticket_id, teller_list):
     if amount > 10000:
         priority_level = True
 
-    ticket_id += 1  # Generates a new ticket id
+    if priority_level:
+        ticket_id = op.make_account_id(prefix='PC-')# Generates a new ticket id
+    else:
+        ticket_id = op.make_account_id(prefix='NC-')
 
     new_customer = Customer(customer_name, service_request, ticket_id, priority_level)
 
@@ -170,12 +172,12 @@ def customer(ticket_id, teller_list):
         return
 
     print()
-    print("*"*10, "Welcome", "*"*10)
+    print("*"*15, "Welcome", "*"*15)
     print("Ticket Details: ")
     print(f"\t\tName: {customer_name}")
     print(f"\t\tTicket Number: #{ticket_id}")
     print(f"\t\tTransaction: {service_request}")
-    print("*"*29, "\n")
+    print("*"*38, "\n")
 
 def get_choice():
     while True:
@@ -244,7 +246,6 @@ def teller(teller_list):
 
 def main():
     teller_list = []
-    ticket_id = 0
     teller_id = 21
 
     print("*" * 6, "Welcome to DIGESJC Bank", "*" * 6, end="\n")  # Welcomes user
@@ -255,8 +256,7 @@ def main():
         if user == 1:
             admin(teller_id, teller_list)
         elif user == 2:
-            customer(ticket_id, teller_list)
-            ticket_id += 1
+            customer(teller_list)
         else:
             teller(teller_list)
 
