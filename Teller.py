@@ -28,7 +28,7 @@ class TellerQueue:
             raise Exception("Queue is full")
 
         if customer.service_request == self.service: # Matches customer to teller
-            if customer.priority_level is True:
+            if customer.priority_level:
                 self.push_front(customer)
             else:
                 self.queue.append(customer)
