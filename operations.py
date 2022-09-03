@@ -67,4 +67,4 @@ def make_account_id(prefix='DT-'):
             code = code.replace(l,'')
     code = code.split()
     code = str(int(code[0])+int(code[1])//100)
-    return prefix + code[:4] + '-' + code[4:]
+    return prefix + code[:2] + '-' + code[2:4]
