@@ -28,7 +28,7 @@ class TellerQueue:
             raise Exception("Queue is full")
 
         if customer.service_request == self.service: # Matches customer to teller
-            if customer.priority_level is True:
+            if customer.priority_level:
                 self.push_front(customer)
             else:
                 self.queue.append(customer)
@@ -51,7 +51,7 @@ class TellerQueue:
         """Displays the customers in the queue"""
         print("Name", " " * 15, "Ticket")
         for i in range(self.current_queue_size()):
-            print(f"{str(self.queue[i].name):<20}: #{str(self.queue[i].ticket_ID)}")
+            print(f"{str(self.queue[i].name):<20} #{str(self.queue[i].ticket_ID)}")
         print(f"\nNumber of Customers: {self.current_queue_size()}")
         return ""
 
