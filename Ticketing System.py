@@ -35,8 +35,9 @@ def admin(teller_list):
         return
 
     else:
-        print("\nPlease enter the service queue you want to edit")
-        service = get_service()
+        # Allows the admin to change the active teller
+        print("\nPlease enter the service queue you want to edit") 
+        service = get_service()  
 
         if len(teller_list) == 0:
             print("\nNo teller queues have been created\n")
