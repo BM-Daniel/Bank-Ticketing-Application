@@ -108,7 +108,7 @@ def make_account_id(prefix='DT-'):
             code = code.replace(l,'')
     code = code.split()
     code = str(int(code[0])+int(code[1])//100)
-    return prefix + code[:2] + '-' + code[2:4]
+    return prefix + code[:3] + '-' + code[3:6]
 # ## INPUT FUNCTIONS
 # def get_name():
 #     '''reads user name input, checks validity and returns the valid name.'''

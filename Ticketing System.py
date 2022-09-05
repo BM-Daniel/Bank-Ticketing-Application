@@ -1,6 +1,8 @@
 from Customer import Customer
 from Teller import TellerQueue
 from operations import *
+import openpyxl, xlrd, os
+from openpyxl import Workbook
 
 def admin(teller_list):
     """
@@ -53,7 +55,7 @@ def admin(teller_list):
         if teller_absent:
             print("\nThe service queue does not exist!\n")
 
-def customer(teller_list):
+def customer(teller_list, sheet):
     """
     Adds a new customer to a particular teller queue
     :param ticket_id:
@@ -100,6 +102,10 @@ def customer(teller_list):
 
     new_customer = Customer(customer_name, service_request, ticket_id, priority_level)
 
+    customer_tuple = (customer_name, service_request, ticket_id, priority_level, "¢" + str(amount))
+
+    sheet.append(customer_tuple)
+
     for i in range(len(teller_list)):
         teller_list[i].enqueue(new_customer)  # Adds a customer to a particular teller queue
 
@@ -143,6 +149,26 @@ def teller(teller_list):
 def main():
     teller_list = []
 
+    dest_filename = 'Customers.xlsx'
+
+    if os.path.isfile(dest_filename):
+        try:
+            file = openpyxl.load_workbook(dest_filename)
+        except PermissionError:
+            print("\nFile is open. Close it")
+    else:
+        file = Workbook()
+        sheet = file.active
+
+        heading = ("Name", "Service Request", "Ticket ID", "Priority", "Amount")
+
+        for i in range(1, 6):
+            sheet.cell(row=1, column=i).value = heading[i - 1]
+
+        file.save(dest_filename)
+
+    sheet = file.active
+
     print("*" * 6, "Welcome to DIGESJC Bank", "*" * 6, end="\n")  # Welcomes user
 
     while True:
@@ -151,8 +177,12 @@ def main():
         if user == 1:
             admin(teller_list)
         elif user == 2:
-            customer(teller_list)
+            customer(teller_list, sheet)
         else:
             teller(teller_list)
+
+        file.save(dest_filename)
+
+
 
 main()
