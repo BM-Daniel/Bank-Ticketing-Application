@@ -13,10 +13,3 @@ class Customer:
     def set_priority_level(self, priority_level):
         """Sets priority level of the customer"""
         self.priority_level = priority_level
-
-    # def add_customer(self, customer_list):
-    #     customer_list.append(self.customer)
-
-
-
-
