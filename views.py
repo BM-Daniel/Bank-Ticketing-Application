@@ -3,6 +3,7 @@ from tkinter.ttk import *
 from gui_operations import *
 
 
+
 def home_view(win_prop, frame=''):
     """layout for the home window.
       home_view is created directly in the main window. No frame is used.
