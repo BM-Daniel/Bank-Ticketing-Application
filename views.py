@@ -1,8 +1,7 @@
 from tkinter import *
 from tkinter.ttk import *
 from gui_operations import *
-
-
+# from Ticketing_System import *
 
 def home_view(win_prop, frame=''):
     """layout for the home window.
@@ -499,13 +498,15 @@ def create_queue_view(win_prop,preframe,crud):
         Label(frame,text=HEADING,font=f'{DEFAULT_FONT} 18 bold',bg=THEME_LIGHT, 
               fg=THEME_DARK).place(x=place_center(WIN_WIDTH,len(HEADING)*13),y=WIN_HEIGHT*0.1)
         ## Name field
-        teller_name, service_option = 'Teller Name', 'Select Service'
-        Label(frame, text=teller_name, 
+        teller_label, service_option = 'Teller Name', 'Select Service'
+        Label(frame, text=teller_label, 
               font=f'{DEFAULT_FONT} 14', 
               justify=LEFT,
               bg=THEME_LIGHT, 
               fg=THEME_DARK).place(x=WIN_WIDTH*0.4,y=WIN_HEIGHT*0.3)   
-        teller_id = Entry(frame, 
+        
+        teller_name = StringVar()
+        Entry(frame, textvariable=teller_name, 
               font= f'{DEFAULT_FONT} 10', 
               fg='#666', 
               width=30, 
@@ -516,12 +517,14 @@ def create_queue_view(win_prop,preframe,crud):
               bg=THEME_LIGHT, 
               fg=THEME_DARK).place(x=WIN_WIDTH*0.4,y=WIN_HEIGHT*0.5)    
         options = ['Deposit', 'Transfer', 'Withdraw']
-        selected = StringVar()
+        
+        selected = StringVar(frame)
         selected.set(options[0])
-        OptionMenu(frame, 
+        OptionMenu(frame,
               selected, 
               *options,
               ).place(x=WIN_WIDTH*0.445,y=WIN_HEIGHT*0.6)  
+
     ## buttons     
     Button(frame, text="Cancel",
           font=f'{DEFAULT_FONT} 10 bold', 
@@ -538,8 +541,11 @@ def create_queue_view(win_prop,preframe,crud):
           fg=THEME_DARK, 
           width=BTN_WIDTH, 
           height=1,
-          command=lambda: notice_view(win_prop, frame, action)
+          command=lambda: print(selected.get())
+      #     lambda: notice_view(win_prop, frame, action)
           ).place(x=GAP*2+BTN_WIDTH*8, y=WIN_HEIGHT*0.8)
+
+    return [teller_name,]
 
 
 # notice page

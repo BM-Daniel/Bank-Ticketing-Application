@@ -11,3 +11,7 @@ def go_back(frame_1,viewfunction, win_prop, frame=''):
     '''
     frame_1.destroy()
     return viewfunction(win_prop, frame)
+
+#
+# def route(value, funct):
+#     funct(value)
