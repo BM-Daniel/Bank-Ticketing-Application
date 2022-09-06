@@ -1,5 +1,6 @@
 from Customer import Customer
 from Teller import TellerQueue
+from Ticketing_System import teller
 from operations import *
 import openpyxl, xlrd, os
 from openpyxl import Workbook
@@ -19,7 +20,7 @@ def create_tq(*data):
         teller_list.append(transfer)  # Adds transfer queue to the teller list
 
 def reassign_tq(*data):
-    teller_name, service = data
+    teller_name, service, teller_id = data
     if len(teller_list) == 0:
             print("\nNo teller queues have been created\n")
             return 
@@ -45,4 +46,53 @@ def del_tq(*data):
 
 
 def generate_id(name):
-    return name[0][0:4].lower() + "21"
+    if len(name)>=4:
+        name = name[:4].lower() + "21"
+    else:
+        name = name+"0"*(4-len(name)) + "21"
+    return name
+
+
+def generate_ticket_id():
+    return make_account_id()
+
+def check_service(service):
+    for tq in teller_list:
+        if service == tq.service:
+            return True
+
+    return False
+
+def create_customer(name, ticket_id, service):
+    new_customer = Customer(name, service, ticket_id)
+
+    for tq in teller_list:
+        tq.enqueue(new_customer)
+
+
+def validate_teller(teller_id):
+    for tq in teller_list:
+        if teller_id == tq.teller_ID:
+            return True
+    
+    return False
+
+def check_tq(teller_id):
+    for tq in teller_list:
+        if tq.teller_ID == teller_id:
+            if not tq.is_empty():
+                return True
+
+    return False
+
+def return_tq(teller_id):
+    for tq in teller_list:
+        if tq.teller_ID == teller_id:
+            return tq
+
+def number_of_customers():
+    customers = 0
+    for tq in teller_list:
+        customers += tq.current_queue_size()
+    
+    return customers

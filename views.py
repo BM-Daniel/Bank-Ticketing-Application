@@ -41,7 +41,6 @@ def home_view(win_prop, frame=''):
     # BUTTONS
     ## Button varaibles
     options = ['Admin', 'Teller', 'Customer']
-    commands = [admin_login, teller_login, customer_page]
     ## Button design variables
     no_of_users = len(options)
     BTN_WIDTH, BTN_HEIGHT = DEFAULT_FONT_SIZE+5, 3
@@ -58,7 +57,7 @@ def home_view(win_prop, frame=''):
       fg=THEME_LIGHT, 
       width=BTN_WIDTH, 
       height=BTN_HEIGHT,
-      command=lambda: commands[0](win_prop,frame)
+      command=lambda: admin_login(win_prop,frame)
       ).place(x=GAP*(0+1)+BTN_WIDTH*8*(0), y=My) 
     
     Button(frame, 
@@ -69,7 +68,7 @@ def home_view(win_prop, frame=''):
       fg=THEME_LIGHT, 
       width=BTN_WIDTH, 
       height=BTN_HEIGHT,
-      command=lambda: commands[1](win_prop,frame)
+      command=lambda: teller_login(win_prop,frame) if teller_list else ''
       ).place(x=GAP*(1+1)+BTN_WIDTH*8*(1), y=My)
 
     Button(frame, 
@@ -80,7 +79,7 @@ def home_view(win_prop, frame=''):
       fg=THEME_LIGHT, 
       width=BTN_WIDTH, 
       height=BTN_HEIGHT,
-      command=lambda: commands[2](win_prop,frame)
+      command=lambda: customer_login(win_prop,frame) if teller_list else ''
       ).place(x=GAP*(2+1)+BTN_WIDTH*8*(2), y=My)
 
 
@@ -159,14 +158,14 @@ def teller_login(win_prop,preframe):
     HEADING = "Teller Login"
     Label(frame,text=HEADING,font=f'{DEFAULT_FONT} 18 bold', bg=THEME_LIGHT, fg=THEME_DARK).place(x=place_center(WIN_WIDTH,len(HEADING)*11),y=WIN_HEIGHT*0.1)
     
-    passwordvalue, teller_id = '', 'T-'
+    passwordvalue, teller_id = '', StringVar()
     PASS_LABEL, ID_LABLE = 'Enter Password', 'Enter Teller ID'
     ## ID field
     Label(frame, text=ID_LABLE, 
           font=f'{DEFAULT_FONT} 14', 
           bg=THEME_LIGHT, 
           fg=THEME_DARK).place(x=place_center(WIN_WIDTH,len(ID_LABLE)*8),y=WIN_HEIGHT*0.3)   
-    teller_id = Entry(frame, textvariable=teller_id, 
+    Entry(frame, textvariable=teller_id, 
           font= f'{DEFAULT_FONT} 10', 
           fg='#666', 
           width=BTN_WIDTH, 
@@ -182,13 +181,14 @@ def teller_login(win_prop,preframe):
           width=BTN_WIDTH, 
           bd=1).place(x=place_center(WIN_WIDTH,BTN_WIDTH*8),y=WIN_HEIGHT*0.6)
       
+
     ## submit button
     Button(frame, text="Login",
            font=f'{DEFAULT_FONT} 10 bold', 
            bd=0, bg=THEME_DARK, 
            fg=THEME_LIGHT, width=BTN_WIDTH, 
            height=1,
-           command=lambda: serve_customer(win_prop, frame)
+           command=lambda: serve_customer(win_prop, frame, teller_id.get()) if validate_teller(teller_id.get()) else ''
            ).place(x=place_center(WIN_WIDTH, BTN_WIDTH*8), y=WIN_HEIGHT*0.7)
     ## back button
     Button(frame, text="<<👈 Go Back",
@@ -200,7 +200,7 @@ def teller_login(win_prop,preframe):
            command=lambda:go_back(frame,home_view, win_prop)
            ).place(x=place_center(WIN_WIDTH, 15*8), y=WIN_HEIGHT*0.8)
     
-def customer_page(win_prop,preframe):
+def customer_page(win_prop,preframe, customer_name):
     # GLOBAL VARIABLES
     root = win_prop['root']
     WIN_HEIGHT, WIN_WIDTH = win_prop['WIN_HEIGHT'], win_prop['WIN_WIDTH']
@@ -230,7 +230,7 @@ def customer_page(win_prop,preframe):
            fg=THEME_LIGHT, 
            width=BTN_WIDTH, 
            height=BTN_HEIGHT,
-           command=lambda:ticket_page(win_prop,frame,'Deposit')
+           command=lambda:ticket_page(win_prop,frame,'Deposit', customer_name) if check_service('Deposit') else ''
            ).place(x=GAP, y=My)
     ## Withdraw button
     Button(frame, text="Withdraw", 
@@ -239,7 +239,7 @@ def customer_page(win_prop,preframe):
            fg=THEME_LIGHT, 
            width=BTN_WIDTH, 
            height=BTN_HEIGHT,
-           command=lambda:ticket_page(win_prop,frame,'Withdraw')
+           command=lambda:ticket_page(win_prop,frame,'Withdraw', customer_name) if check_service('Withdraw') else ''
            ).place(x=GAP*2+BTN_WIDTH*8, y=My)
     ## Transfer button
     Button(frame, text="Transfer",
@@ -248,7 +248,7 @@ def customer_page(win_prop,preframe):
            fg=THEME_LIGHT, 
            width=BTN_WIDTH, 
            height=BTN_HEIGHT,
-           command=lambda:ticket_page(win_prop,frame,'Transfer')
+           command=lambda:ticket_page(win_prop,frame,'Transfer', customer_name) if check_service('Transfer') else ''
            ).place(x=GAP*3+BTN_WIDTH*8*2, y=My)
     ## back button
     Button(frame, text="<<👈 Go Back",
@@ -260,8 +260,62 @@ def customer_page(win_prop,preframe):
           command=lambda:go_back(frame,home_view, win_prop)
           ).place(x=place_center(WIN_WIDTH, 15*8), y=WIN_HEIGHT*0.8)
 
+
+def customer_login(win_prop,preframe):
+    # GLOBAL VARIABLES
+    root = win_prop['root']
+    WIN_HEIGHT, WIN_WIDTH = win_prop['WIN_HEIGHT'], win_prop['WIN_WIDTH']
+    THEME_DARK, THEME_LIGHT = win_prop['THEME_DARK'], win_prop['THEME_LIGHT']
+    DEFAULT_FONT = win_prop['DEFAULT_FONT']
+    BTN_WIDTH = 30
+
+    ## FRAME SETUP
+    preframe.pack_forget()
+    frame = Frame(root, bg=THEME_LIGHT)
+    frame.pack(fill='both', expand=1)
+
+    # H1 Heading
+    HEADING = "Welcome"
+    Label(frame,text=HEADING,
+          font=f'{DEFAULT_FONT} 18 bold', 
+          bg=THEME_LIGHT, 
+          fg=THEME_DARK).place(x=place_center(WIN_WIDTH,len(HEADING)*12),y=WIN_HEIGHT*0.2)
+    # password label
+    PASS_LABEL, customer_name = 'Enter Name', StringVar()
+    Label(frame, text=PASS_LABEL,
+          font=f'{DEFAULT_FONT} 14', 
+          bg=THEME_LIGHT, 
+          fg=THEME_DARK).place(x=place_center(WIN_WIDTH,len(PASS_LABEL)*9),y=WIN_HEIGHT*0.4)
+    # password entry/input field
+    Entry(frame, textvariable=customer_name,
+         font= f'{DEFAULT_FONT} 10', 
+         fg='#666', 
+         width=BTN_WIDTH, 
+         bd=1).place(x=place_center(WIN_WIDTH,BTN_WIDTH*8),y=WIN_HEIGHT*0.5)
+    
+    # submit button
+    Button(frame, text="Next",
+           font=f'{DEFAULT_FONT} 10 bold', 
+           bd=0, bg=THEME_DARK, 
+           fg=THEME_LIGHT, 
+           width=BTN_WIDTH, 
+           height=1,
+           command=lambda: customer_page(win_prop, frame, customer_name.get()) if customer_name.get() else ''
+           ).place(x=place_center(WIN_WIDTH, BTN_WIDTH*8), y=WIN_HEIGHT*0.6)
+    ## back button
+    BTN_WIDTH = BTN_WIDTH-15
+    Button(frame, text="<<👈 Go Back",
+           font=f'{DEFAULT_FONT} 10 bold', 
+           bd=0, bg='#d4af37',
+           fg=THEME_DARK,
+           width=BTN_WIDTH, 
+           height=1,
+           command=lambda:go_back(frame,home_view, win_prop)
+           ).place(x=place_center(WIN_WIDTH, BTN_WIDTH*8), y=WIN_HEIGHT*0.8)
+
+
 # ==================3rd View============== #
-def ticket_page(win_prop,preframe,service=''):
+def ticket_page(win_prop,preframe,service='', name='', teller_id=''):
     # GLOBAL VARIABLES
     root = win_prop['root']
     WIN_HEIGHT, WIN_WIDTH = win_prop['WIN_HEIGHT'], win_prop['WIN_WIDTH']
@@ -282,8 +336,10 @@ def ticket_page(win_prop,preframe,service=''):
     if service:
       typ = 'Ticket'
       HEADING = HEADING + typ
-      back = customer_page
-      label_content = f"Name: {dot}\nTicket ID: {dot}\nService: {dot}\nDate: {dot}"
+      back = home_view
+      ticket_id = generate_ticket_id()
+      label_content = f"\nCustomer Name: {name.title()}\nTicket ID: {ticket_id}\nService: {service}\nDate: {datetime.today().date()}"
+      create_customer(name,ticket_id, service)
       Label(frame,text=service+' Ticket',
             font=f'{DEFAULT_FONT} 14', 
             bg=THEME_LIGHT, 
@@ -293,7 +349,9 @@ def ticket_page(win_prop,preframe,service=''):
       back = serve_customer
       typ = 'Receipt'
       HEADING = HEADING + typ
-      label_content = f"Customer Name: {dot}\nService: {dot}\nAmount: {dot}\nDate Issuded: {dot}\nTeller ID: {dot}\nTeller Name: {dot}"
+      teller = return_tq(teller_id)
+      customer_details = teller.dequeue()
+      label_content = f"Customer Name: {customer_details[0].title()}\nService: {customer_details[2]}\nDate Issued: {datetime.today().date()}\nTeller ID: {teller_id}\nTeller Name: {teller.teller_name}"
     
     Label(frame,text=HEADING,
           font=f'{DEFAULT_FONT} 18 bold', 
@@ -312,7 +370,7 @@ def ticket_page(win_prop,preframe,service=''):
           fg=THEME_DARK, 
           width=BTN_WIDTH, 
           height=1,
-          command=lambda:go_back(frame,back, win_prop,frame)
+          command=lambda:go_back(frame,back, win_prop,frame) if service else serve_customer(win_prop, frame, teller_id)
           ).place(x=GAP, y=WIN_HEIGHT*0.8)
 
     Button(frame, text="🖨️ Print "+typ,
@@ -325,7 +383,7 @@ def ticket_page(win_prop,preframe,service=''):
           ).place(x=GAP*2+BTN_WIDTH*8, y=WIN_HEIGHT*0.8)
 
 
-def serve_customer(win_prop, preframe):
+def serve_customer(win_prop, preframe, teller_id):
     # GLOBAL VARIABLES
     root = win_prop['root']
     WIN_HEIGHT, WIN_WIDTH = win_prop['WIN_HEIGHT'], win_prop['WIN_WIDTH']
@@ -356,7 +414,7 @@ def serve_customer(win_prop, preframe):
       fg=THEME_DARK, 
       width=BTN_WIDTH, 
       height=BTN_HEIGHT,
-      command=lambda: ticket_page(win_prop,frame)
+      command=lambda: ticket_page(win_prop,frame, teller_id=teller_id) if check_tq(teller_id) else ''
       ).place(x=WIN_WIDTH*0.394, y=WIN_HEIGHT*0.45) 
 
     ## exit button
@@ -421,7 +479,7 @@ def admin_panel_view(win_prop, preframe):
          bg=THEME_LIGHT, 
          fg=THEME_DARK).place(x=WIN_WIDTH*0.59,y=WIN_HEIGHT*0.3)
 
-    label_content = f"Total Number of Customers: {dot}\n\nTotal customers in queue: {dot}\nTotal customers served: {dot}"
+    label_content = f"Total Number of Customers in queue: {number_of_customers()}"
     Label(frame,text=label_content,
           font=f'{DEFAULT_FONT} 10',
           justify=LEFT,
@@ -546,13 +604,6 @@ def create_queue_view(win_prop,preframe,crud):
               *options,
               ).place(x=WIN_WIDTH*0.445,y=WIN_HEIGHT*0.6)  
     
-    params = [del_tel.get() if action == 'Delete' else teller_name.get() , selected.get()]
-    
-    def get_id():      
-      teller_id = lambda: generate_id(teller_name.get())
-      params.append(teller_id), print(params)
-      notice_view(win_prop, frame, action,funct, *params)
-    
     ## buttons     
     Button(frame, text="Cancel",
           font=f'{DEFAULT_FONT} 10 bold', 
@@ -562,6 +613,15 @@ def create_queue_view(win_prop,preframe,crud):
           height=1,
           command=lambda:go_back(frame,admin_panel_view, win_prop, frame)
           ).place(x=GAP, y=WIN_HEIGHT*0.8)
+
+    def get_id():
+      if teller_name.get() == '' and action == 'Create':
+            return ''      
+      params = [del_tel.get() if action == 'Delete' else teller_name.get() , selected.get()]
+      if action != 'Delete':
+          teller_id = generate_id(teller_name.get())
+          params.append(teller_id), print(params)
+      notice_view(win_prop, frame, action,funct, *params)
 
     Button(frame, text="confirm",
           font=f'{DEFAULT_FONT} 10 bold', 
@@ -598,7 +658,10 @@ def notice_view(win_prop, preframe, action, funct, *data):
 
     dot = '*'*25
     print(data[0])
-    label_content = f"Teller Name: {data[0].title()}\nTeller ID: {dot}\nService: {data[1]}"
+    if action == 'Delete':
+         label_content = f"Teller {data[0].title()} has been deleted"
+    else:
+      label_content = f"Teller Name: {data[0].title()}\nTeller ID: {data[2]}\nService: {data[1]}"
     Label(frame,text=label_content,
           font=f'{DEFAULT_FONT} 14',
           justify=LEFT,

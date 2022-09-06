@@ -14,7 +14,7 @@ window_properties = {
 
 # WINDOW SETUP
 root.title("DIGESJC BANK TICKETING SYSTEM")
-# root.iconbitmap("./Snip/bankicon.ico")
+root.iconbitmap("./Snip/bankicon.ico")
 root.geometry(f"{window_properties['WIN_WIDTH']}x{window_properties['WIN_HEIGHT']}")
 root.configure(bg=window_properties['THEME_LIGHT'])
 root.resizable(False,False)
