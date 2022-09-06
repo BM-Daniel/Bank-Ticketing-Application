@@ -1,6 +1,7 @@
 from tkinter import *
+from Ticketing_System import teller
 from gui_operations import *
-
+from ts import *
 
 def home_view(win_prop, frame=''):
     """layout for the home window.
@@ -397,8 +398,16 @@ def admin_panel_view(win_prop, preframe):
          font=f'{DEFAULT_FONT} 12 bold', 
          bg=THEME_LIGHT, 
          fg=THEME_DARK).place(x=WIN_WIDTH*0.14,y=WIN_HEIGHT*0.3)
-
-    label_content = f"Total Number of Tellers: {dot}\n\nTeller Queue #1: {dot}\nTeller Queue #2: {dot}\nTeller Queue #3: {dot}"
+ 
+    label_content = f"Total Number of Tellers: {len(teller_list)}"
+    i=0
+    while i< len(teller_list):
+        if len(teller_list) > 3:
+            break
+        label_content += f"\n\n#{i+1} {teller_list[i].teller_name}: {teller_list[i].service}"
+        i += 1
+    if len(teller_list) >= 3:
+        label_content = f"Total Number of Tellers: {len(teller_list)}\n\n#{1} {teller_list[0].teller_name}: {teller_list[1].service}\n#{2} {teller_list[1].teller_name}: {teller_list[1].service}\n#{3} {teller_list[2].teller_name}: {teller_list[2].service}"
     Label(frame,text=label_content,
           font=f'{DEFAULT_FONT} 10',
           justify=LEFT,
@@ -430,13 +439,19 @@ def admin_panel_view(win_prop, preframe):
            command=lambda: create_queue_view(win_prop, frame, 'create')
            ).place(x=GAP, y=WIN_HEIGHT*0.7)
     ### Delete Teller Queue
+    def confirm_len():
+      if len(teller_list) == 0:
+            return ''
+      else:
+            return create_queue_view(win_prop, frame,'update')
+    
     Button(frame, text="Reassign Teller Queue", 
            font=f'{DEFAULT_FONT} 10', 
            bd=0, bg='#2468ac', 
            fg=THEME_LIGHT, 
            width=BTN_WIDTH, 
            height=BTN_HEIGHT,
-           command=lambda: create_queue_view(win_prop, frame,'update')
+           command= confirm_len
            ).place(x=GAP*2+BTN_WIDTH*8, y=WIN_HEIGHT*0.7)
     ### Assign Teller
     Button(frame, text="Delete Teller",
@@ -460,7 +475,7 @@ def admin_panel_view(win_prop, preframe):
 # ========================================== #
 # CREATE TELLER QUEUE => NOTICE VIEW
 def create_queue_view(win_prop,preframe,crud):
-    '''- name entry - service option - confirm button - cancel button'''
+    '''- name entry - service option - confirm button -  button'''
     # GLOBAL VARIABLES
     root = win_prop['root']
     WIN_HEIGHT, WIN_WIDTH = win_prop['WIN_HEIGHT'], win_prop['WIN_WIDTH']
@@ -474,36 +489,47 @@ def create_queue_view(win_prop,preframe,crud):
     frame = Frame(root, bg=THEME_LIGHT)
     frame.pack(fill='both', expand=1)
 
+    teller_name = StringVar()
+    selected = StringVar(frame)
     if crud == 'delete':
         action = 'Delete'
+        funct = del_tq
         HEADING = "Delete a Teller Queue"
         service_option ='Select Teller'
         Label(frame, text=HEADING,font=f'{DEFAULT_FONT} 18 bold',justify=LEFT,
              bg=THEME_LIGHT,fg=THEME_DARK).place(x=WIN_WIDTH*0.34,y=WIN_HEIGHT*0.1)   
         Label(frame, text=service_option,font=f'{DEFAULT_FONT} 14',justify=LEFT,
              bg=THEME_LIGHT,fg=THEME_DARK).place(x=WIN_WIDTH*0.43,y=WIN_HEIGHT*0.3)   
-        options = ['Teller #1', 'Teller #2', 'Teller #3']
-        selected = StringVar()
-        selected.set('----------')
-        OptionMenu(frame,selected,*options,).place(x=WIN_WIDTH*0.445,y=WIN_HEIGHT*0.45)
+        options = [teller.teller_name for teller in teller_list]
+        del_tel = StringVar()
+        del_tel.set('----------')
+        OptionMenu(frame,del_tel,*options,).place(x=WIN_WIDTH*0.445,y=WIN_HEIGHT*0.45)
 
     else:
         HEADING = "Create New Teller Queue"
         action = 'Create'
+        funct = create_tq
+        options = ['Deposit', 'Transfer', 'Withdraw']
         if crud == 'update':
              HEADING = "Reassign Teller Queue"
+             options = []
+             for teller in teller_list:
+                  if teller.service not in options:
+                        options.append(teller.service)
              action = 'Reassign'
+             funct = reassign_tq
         # H1 Heading
         Label(frame,text=HEADING,font=f'{DEFAULT_FONT} 18 bold',bg=THEME_LIGHT, 
               fg=THEME_DARK).place(x=place_center(WIN_WIDTH,len(HEADING)*13),y=WIN_HEIGHT*0.1)
         ## Name field
-        teller_name, service_option = 'Teller Name', 'Select Service'
-        Label(frame, text=teller_name, 
+        teller_label, service_option = 'Teller Name', 'Select Service'
+        Label(frame, text=teller_label, 
               font=f'{DEFAULT_FONT} 14', 
               justify=LEFT,
               bg=THEME_LIGHT, 
               fg=THEME_DARK).place(x=WIN_WIDTH*0.4,y=WIN_HEIGHT*0.3)   
-        teller_id = Entry(frame, 
+        
+        Entry(frame, textvariable=teller_name,
               font= f'{DEFAULT_FONT} 10', 
               fg='#666', 
               width=30, 
@@ -513,13 +539,20 @@ def create_queue_view(win_prop,preframe,crud):
               font=f'{DEFAULT_FONT} 14', 
               bg=THEME_LIGHT, 
               fg=THEME_DARK).place(x=WIN_WIDTH*0.4,y=WIN_HEIGHT*0.5)    
-        options = ['Deposit', 'Transfer', 'Withdraw']
-        selected = StringVar()
+        
         selected.set(options[0])
         OptionMenu(frame, 
               selected, 
               *options,
               ).place(x=WIN_WIDTH*0.445,y=WIN_HEIGHT*0.6)  
+    
+    params = [del_tel.get() if action == 'Delete' else teller_name.get() , selected.get()]
+    
+    def get_id():      
+      teller_id = lambda: generate_id(teller_name.get())
+      params.append(teller_id), print(params)
+      notice_view(win_prop, frame, action,funct, *params)
+    
     ## buttons     
     Button(frame, text="Cancel",
           font=f'{DEFAULT_FONT} 10 bold', 
@@ -536,13 +569,14 @@ def create_queue_view(win_prop,preframe,crud):
           fg=THEME_DARK, 
           width=BTN_WIDTH, 
           height=1,
-          command=lambda: notice_view(win_prop, frame, action)
+          command=lambda: get_id()
           ).place(x=GAP*2+BTN_WIDTH*8, y=WIN_HEIGHT*0.8)
 
 
 # notice page
-def notice_view(win_prop, preframe, action):
+def notice_view(win_prop, preframe, action, funct, *data):
     # GLOBAL VARIABLES
+    funct(*data)
     root = win_prop['root']
     WIN_HEIGHT, WIN_WIDTH = win_prop['WIN_HEIGHT'], win_prop['WIN_WIDTH']
     THEME_DARK, THEME_LIGHT = win_prop['THEME_DARK'], win_prop['THEME_LIGHT']
@@ -556,14 +590,15 @@ def notice_view(win_prop, preframe, action):
     frame.pack(fill='both', expand=1)
 
     # H1 Heading
-    HEADING = action+'d Teller'
+    HEADING = action+' Teller'
     Label(frame,text=HEADING,
           font=f'{DEFAULT_FONT} 18 bold', 
           bg=THEME_LIGHT, 
           fg=THEME_DARK).place(x=place_center(WIN_WIDTH,len(HEADING)*12)-12.5,y=WIN_HEIGHT*0.1)
 
     dot = '*'*25
-    label_content = f"Teller Name: {dot}\nTeller ID: {dot}\nService: {dot}"
+    print(data[0])
+    label_content = f"Teller Name: {data[0].title()}\nTeller ID: {dot}\nService: {data[1]}"
     Label(frame,text=label_content,
           font=f'{DEFAULT_FONT} 14',
           justify=LEFT,
