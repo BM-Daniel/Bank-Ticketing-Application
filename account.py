@@ -65,3 +65,7 @@ def notification(success_value,function,amount,account,notify=True):
         prep, status = (' of','Successful') if success_value else ('','Failed to')
         print(f"BT<< {status} {function.__name__}{prep} GHS {amount}. {account.name} balance is GHS {account.balance}")
 
+def verify_password(user, password, user_type):
+    '''This is just for trials'''
+    if password == 'password':
+        return True

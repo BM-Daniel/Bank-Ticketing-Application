@@ -3,6 +3,7 @@ from Teller import TellerQueue
 from operations import *
 import openpyxl, xlrd, os
 from openpyxl import Workbook
+from views import *
 
 def admin(teller_list):
     """
@@ -185,4 +186,4 @@ def main():
 
 
 
-main()
+# main()
