@@ -1,9 +1,10 @@
 from Customer import Customer
 from Teller import TellerQueue
 from operations import *
+
 import openpyxl, xlrd, os
 from openpyxl import Workbook
-from views import *
+from GUI.views import *
 
 def admin(teller_list):
     """
