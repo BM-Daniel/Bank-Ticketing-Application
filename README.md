@@ -1,53 +1,44 @@
 # Bank Ticketing System
 
+The purpose of this project is to apply `data structures` and `algorithms` to real world applicatoins. In this app, ticketing system is handled by queue data structure and the customers are assigned to the appropriate queue based on their banking needs and priority using a scheduling algorithm.
+
 ## OBJECTIVES
-<<<<<<< Updated upstream
-> - [x] Input `customers`
-> - [ ] Assign customer to a `teller queue` based on the type of service they require
-> - [ ] `Tellers` serve customers
-=======
-> - [ ] Input `customers`
-> - [ ] Assign customer to a `teller queue` based on the type of service they require
-> - [ ] Tellers serve customers
->>>>>>> Stashed changes
-> ---
 
-## GOALS
-> - Serving customer in the shortest possible time
-<<<<<<< Updated upstream
-> 
-=======
-> - 
->>>>>>> Stashed changes
+![homepage](./Snip/bank-ticketing-system-1.png)
+![Admin Dashboard](./Snip/bank-ticketing-system-2.png)
 
-## CREATIVE AD-ONS
+Checkout the user flow from [flow-chart](./Snip/banking%20ticketing%20system.png)
+
+```
+## CREATIVE AD-ONS // for the future
+
 > - [ ] Make some customers have higher priority
-> - [ ] Optimize customer-to-queue assignment algorithm 
+> - [ ] Optimize customer-to-queue assignment algorithm
 > - [ ] Responsive and interactive user interface
 
+```
+
 ---
+
 The Bank Ticketing System has three main operations
+
 - Getting customer information
-	- Create customer
-	- Take necessary banking information
+  - Create customer
+  - Take necessary banking information
 - Admin operations
-	- Reading customer data
-		- Determining validity
-		- Security measures
-	- Making logical decisions
-		- Interpreting customers information required to properly assign a customer to the appropriate queue
-		- *handling misappropriate behaviours*
-- Teller serving customers 
-	- Handling fund transfers
-	- Handling fund withdrawals
-	- Handling fund deposits
+  - Reading customer data
+    - Determining validity
+    - Security measures
+  - Making logical decisions
+    - Interpreting customers information required to properly assign a customer to the appropriate queue
+    - _handling misappropriate behaviours_
+- Teller serving customers
+  - Handling fund transfers
+  - Handling fund withdrawals
+  - Handling fund deposits
 
 ---
-# Diagram
-![image](./Snip/bank%20queue.png)
-<<<<<<< Updated upstream
 
-# Flow Chart
-![flow-chart](./Snip/banking%20ticketing%20system.png)
-=======
->>>>>>> Stashed changes
+# Diagram
+
+![image](./Snip/bank%20queue.png)

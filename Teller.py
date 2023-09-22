@@ -41,7 +41,8 @@ class TellerQueue:
             raise Exception("Queue is empty")
 
         self.queue_size -= 1
-        return f"Ticket number {self.queue.pop(self.front).ticket_ID} has been served\n"
+        customer = self.queue.pop(self.front)
+        return (customer.name, customer.ticket_ID, customer.service_request)
 
     def current_queue_size(self):
         """Return the current number of customers in the queue"""
